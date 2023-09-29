@@ -5,7 +5,7 @@ All the data can be downloaded from https://drive.google.com/drive/folders/1OvZz
 
 The notebook `getRotations.ipynb` is used to calculate the orientation of each galaxy in the sample.
 
-Then, the physics-informed VAE can be trained with the script `trainVAE_wRotAngle.py` and the vanilla VAE can be trained with the script trainVAE_uninformed.py.
+Then, the physics-informed VAE can be trained with the script `trainVAE_wRotAngle.py` and the vanilla VAE can be trained with the script `trainVAE_uninformed.py`.
 
 Finally, the plots in the paper were generated with the notebook `findAnomalies.ipynb`. 
 
