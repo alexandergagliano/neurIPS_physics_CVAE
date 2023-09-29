@@ -192,7 +192,7 @@ optimizer = torch.optim.Adam(
 
 # Adding additional terms? Try to re-derive the KL divergence from
 # https://ai.stackexchange.com/questions/26366/how-is-this-pytorch-expression-equivalent-to-the-kl-divergence
-def ELBO(x_hat, x, mu, logvar, y, beta0, beta1, beta2):
+def ELBO(x_hat, x, mu, logvar, y, beta0, beta1):
     MSE = torch.nn.MSELoss(reduction='sum')(x_hat, x)
 
     KLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
@@ -210,12 +210,11 @@ for epoch in range(0, nepochs):
     train_loss = 0
     print("beta0: %.1f"%beta0[epoch], file=f)
     print("beta1: %.1f"%beta1[epoch], file=f)
-    print("beta2: %.1f"%beta2[epoch], file=f)
     for x, y in train_loader:
         x = x.to(device)
         y = y.to(device)
         x_hat, mu, logvar = model(x)
-        loss = ELBO(x_hat, x, mu, logvar, y, beta0[epoch], beta1[epoch], beta2[epoch])
+        loss = ELBO(x_hat, x, mu, logvar, y, beta0[epoch], beta1[epoch])
         train_loss += loss.item()
         optimizer.zero_grad()
         loss.backward()
@@ -228,7 +227,7 @@ for epoch in range(0, nepochs):
         for x, y in valid_loader:
             x = x.to(device)
             x_hat, mu, logvar = model(x)
-            valid_loss += ELBO(x_hat, x, mu, logvar, y, beta0[epoch], beta1[epoch], beta2[epoch])
+            valid_loss += ELBO(x_hat, x, mu, logvar, y, beta0[epoch], beta1[epoch])
 
     validation_losses.append(valid_loss / len(valid_loader.dataset))
     training_losses.append(train_loss / len(train_loader.dataset))
@@ -237,6 +236,7 @@ for epoch in range(0, nepochs):
 
     # display
     if epoch % 50 == 0:
+        f.flush()
         display_images(x, x_hat, 1, label=f'Epoch {epoch}')
         plt.savefig("plots/Reconstructions_GAMAZou26k_d%i_uninformed_epoch%05d_Final.png"%(d, epoch), dpi=300, bbox_inches='tight')
 
